@@ -40,3 +40,13 @@ def time_stamp_file_name(name, dt, sep='-'):
 
 def path_from_datetime(dt):
     return '/'.join([iso8601_ext(dt, precision=p) for p in ['year', 'month']])
+
+
+def normalise_name(name):
+    return name.lower()
+
+
+def normalise_dir_ops(files):
+    normal = [normalise_name(file) for file in files]
+    changed = [(was, now) for was, now in zip(files, normal) if now != was]
+    return [('rename', was, now) for was, now in changed]

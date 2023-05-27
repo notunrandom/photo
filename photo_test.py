@@ -39,3 +39,15 @@ def test_path_from_datetime():
     dt = datetime(1995, 3, 17, 9, 5, 59)
     path = photo.path_from_datetime(dt)
     assert path == "1995/1995-03"
+
+
+def test_normalise_name():
+    assert photo.normalise_name('2003-CSEE-001.jpg') == '2003-csee-001.jpg'
+
+
+def test_normalise_dir_ops():
+    files = ['2005-lowercase.jpg', '2004-UPPER.jpg', '1999-CamelCase.png']
+    assert photo.normalise_dir_ops(files) == [
+            ('rename', '2004-UPPER.jpg', '2004-upper.jpg'),
+            ('rename', '1999-CamelCase.png', '1999-camelcase.png')
+            ]
