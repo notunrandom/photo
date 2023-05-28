@@ -1,7 +1,4 @@
-from enum import Enum
-
-
-FileOp = Enum('FileOp', ['RENAME'])
+import pathlib
 
 
 def iso8601(dt):
@@ -55,4 +52,21 @@ def normalise_name(name):
 def normalise_dir_ops(files):
     normal = [normalise_name(file) for file in files]
     changed = [(was, now) for was, now in zip(files, normal) if now != was]
-    return [(FileOp.RENAME, was, now) for was, now in changed]
+    return [(rename, was, now) for was, now in changed]
+
+
+def apply_ops(path, ops):
+    for op, *args in ops:
+        op(path, *args)
+
+
+def rename(path, old_name, new_name):
+    old_path = path / old_name
+    new_path = path / new_name
+    old_path.rename(new_path)
+
+
+def normalise_dir(pathstring='.'):
+    path = pathlib.Path(pathstring)
+    files = [p.name for p in path.iterdir() if p.is_file()]
+    apply_ops(path, normalise_dir_ops(files))
