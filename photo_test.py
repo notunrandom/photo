@@ -48,6 +48,6 @@ def test_normalise_name():
 def test_normalise_dir_ops():
     files = ['2005-lowercase.jpg', '2004-UPPER.jpg', '1999-CamelCase.png']
     assert photo.normalise_dir_ops(files) == [
-            ('rename', '2004-UPPER.jpg', '2004-upper.jpg'),
-            ('rename', '1999-CamelCase.png', '1999-camelcase.png')
+            (photo.FileOp.RENAME, '2004-UPPER.jpg', '2004-upper.jpg'),
+            (photo.FileOp.RENAME, '1999-CamelCase.png', '1999-camelcase.png')
             ]

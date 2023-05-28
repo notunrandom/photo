@@ -1,3 +1,9 @@
+from enum import Enum
+
+
+FileOp = Enum('FileOp', ['RENAME'])
+
+
 def iso8601(dt):
     '''Convert a datetime to basic ISO 8601 format.
 
@@ -49,4 +55,4 @@ def normalise_name(name):
 def normalise_dir_ops(files):
     normal = [normalise_name(file) for file in files]
     changed = [(was, now) for was, now in zip(files, normal) if now != was]
-    return [('rename', was, now) for was, now in changed]
+    return [(FileOp.RENAME, was, now) for was, now in changed]
