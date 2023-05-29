@@ -1,4 +1,8 @@
 import pathlib
+from datetime import datetime
+
+from PIL import Image
+from PIL import ExifTags
 
 
 def iso8601(dt):
@@ -70,3 +74,10 @@ def normalise_dir(pathstring='.'):
     path = pathlib.Path(pathstring)
     files = [p.name for p in path.iterdir() if p.is_file()]
     apply_ops(path, normalise_dir_ops(files))
+
+
+def datetime_original(filename):
+    with Image.open(filename) as img:
+        tags = img.getexif().get_ifd(ExifTags.IFD.Exif)
+        dtstring = tags[ExifTags.Base.DateTimeOriginal]
+        return datetime.strptime(dtstring, '%Y:%m:%d %H:%M:%S')

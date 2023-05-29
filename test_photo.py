@@ -41,8 +41,13 @@ def test_path_from_datetime():
     assert path == "1995/1995-03"
 
 
-def test_normalise_name():
+def test_normalise_name_case():
     assert photo.normalise_name('2003-CSEE-001.jpg') == '2003-csee-001.jpg'
+
+
+def test_datetime_original():
+    result = photo.datetime_original('test.jpg')
+    assert result == datetime(2023, 5, 28, 11, 53, 20)
 
 
 def test_normalise_dir_ops():
