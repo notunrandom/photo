@@ -53,27 +53,25 @@ def normalise_name(name):
     return name.lower()
 
 
-def normalise_dir_ops(files):
-    normal = [normalise_name(file) for file in files]
-    changed = [(was, now) for was, now in zip(files, normal) if now != was]
-    return [(rename, was, now) for was, now in changed]
+def normalise_dir_ops(path):
+    names = [p.name for p in path.iterdir() if p.is_file()]
+    normal = [normalise_name(name) for name in names]
+    changed = [(was, now) for was, now in zip(names, normal) if now != was]
+    return [(rename, path/was, path/now) for was, now in changed]
 
 
-def apply_ops(path, ops):
+def apply_ops(ops):
     for op, *args in ops:
-        op(path, *args)
+        op(*args)
 
 
-def rename(path, old_name, new_name):
-    old_path = path / old_name
-    new_path = path / new_name
-    old_path.rename(new_path)
+def rename(old, new):
+    old.rename(new)
 
 
 def normalise_dir(pathstring='.'):
     path = pathlib.Path(pathstring)
-    files = [p.name for p in path.iterdir() if p.is_file()]
-    apply_ops(path, normalise_dir_ops(files))
+    apply_ops(normalise_dir_ops(path))
 
 
 def datetime_original(filename):

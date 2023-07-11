@@ -50,11 +50,17 @@ def test_datetime_original():
     assert result == datetime(2023, 5, 28, 11, 53, 20)
 
 
-def test_normalise_dir_ops():
+def test_normalise_dir_ops(tmp_path):
+    assert [p.name for p in tmp_path.iterdir()] == []
     files = ['2005-lowercase.jpg', '2004-UPPER.jpg', '1999-CamelCase.png']
-    assert photo.normalise_dir_ops(files) == [
-            (photo.rename, '2004-UPPER.jpg', '2004-upper.jpg'),
-            (photo.rename, '1999-CamelCase.png', '1999-camelcase.png')
+    paths = [tmp_path / f for f in files]
+    for p in paths:
+        p.touch()
+    opers = photo.normalise_dir_ops(tmp_path)
+    names = [(op, p.name, q.name) for (op, p, q) in opers]
+    assert names == [
+            (photo.rename, '1999-CamelCase.png', '1999-camelcase.png'),
+            (photo.rename, '2004-UPPER.jpg', '2004-upper.jpg')
             ]
 
 
@@ -62,12 +68,12 @@ def test_apply_ops(tmp_path):
     CONTENT = 'Unimportant'
     NAME1 = 'blabla.txt'
     NAME2 = 'yohoho.xyz'
-    assert [p.name for p in tmp_path.iterdir()] == []
-    file1 = tmp_path / NAME1
+    assert [p for p in tmp_path.iterdir()] == []
+    file1 = tmp_path/NAME1
     file1.write_text(CONTENT)
-    assert [p.name for p in tmp_path.iterdir()] == [NAME1]
-    ops = [(photo.rename, NAME1, NAME2)]
-    photo.apply_ops(tmp_path, ops)
+    assert [p for p in tmp_path.iterdir()] == [file1]
+    file2 = tmp_path/NAME2
+    ops = [(photo.rename, file1, file2)]
+    photo.apply_ops(ops)
     assert [p.name for p in tmp_path.iterdir()] == [NAME2]
-    file2 = tmp_path / NAME2
     assert file2.read_text() == CONTENT
