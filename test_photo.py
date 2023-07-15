@@ -1,4 +1,5 @@
 from datetime import datetime
+from pathlib import Path
 import pytest
 
 import photo
@@ -64,16 +65,34 @@ def test_normalise_dir_ops(tmp_path):
             ]
 
 
-def test_apply_ops(tmp_path):
+def test_apply_rename_op(tmp_path):
+    assert [p for p in tmp_path.iterdir()] == []
     CONTENT = 'Unimportant'
     NAME1 = 'blabla.txt'
     NAME2 = 'yohoho.xyz'
-    assert [p for p in tmp_path.iterdir()] == []
     file1 = tmp_path/NAME1
     file1.write_text(CONTENT)
     assert [p for p in tmp_path.iterdir()] == [file1]
     file2 = tmp_path/NAME2
-    ops = [(photo.rename, file1, file2)]
-    photo.apply_ops(ops)
+    photo.apply_ops([(photo.rename, file1, file2)])
     assert [p.name for p in tmp_path.iterdir()] == [NAME2]
     assert file2.read_text() == CONTENT
+
+
+def test_apply_ensure_dir_op(tmp_path):
+    assert [p.name for p in tmp_path.iterdir()] == []
+    NAME1 = 'newdir'
+    NAME2 = 'subdir'
+
+    # Will create parent (intermediate) dirs if necessary
+    newdir = tmp_path/NAME1/NAME2
+    photo.apply_ops([(photo.ensure_dir, newdir)])
+    assert [p.name for p in tmp_path.iterdir()] == [NAME1]
+    assert [p.name for p in (tmp_path/NAME1).iterdir()] == [NAME2]
+    assert Path(newdir).is_dir() is True
+
+    # OK if already exists !
+    photo.apply_ops([(photo.ensure_dir, newdir)])
+    assert [p.name for p in tmp_path.iterdir()] == [NAME1]
+    assert [p.name for p in (tmp_path/NAME1).iterdir()] == [NAME2]
+    assert Path(newdir).is_dir() is True

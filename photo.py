@@ -79,3 +79,7 @@ def datetime_original(filename):
         tags = img.getexif().get_ifd(ExifTags.IFD.Exif)
         dtstring = tags[ExifTags.Base.DateTimeOriginal]
         return datetime.strptime(dtstring, '%Y:%m:%d %H:%M:%S')
+
+
+def ensure_dir(path):
+    pathlib.Path(path).mkdir(parents=True, exist_ok=True)
