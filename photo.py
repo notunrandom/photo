@@ -88,12 +88,13 @@ def ensure_dir(path):
 def organise_ops(orig, dest):
     dirs = set()
     move = set()
-    for f in orig.iterdir():
-        datetime = datetime_original(f)
-        subdir = path_from_datetime(datetime)
-        dirs.add(subdir)
-        name = time_stamp_file_name(f.name, datetime)
-        move.add((f, dest/subdir/name))
+    for f in orig.rglob('*'):
+        if f.is_file():
+            datetime = datetime_original(f)
+            subdir = path_from_datetime(datetime)
+            dirs.add(subdir)
+            name = time_stamp_file_name(f.name, datetime)
+            move.add((f, dest/subdir/name))
     ops = [(ensure_dir, dest/d) for d in dirs]
     ops += [(rename, x, y) for x, y in move]
     return ops

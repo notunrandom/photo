@@ -102,8 +102,14 @@ def test_organise_ops():
     DEST = Path('somewhere')
     ORIG = Path('tests/photos')
     ops = photo.organise_ops(ORIG, DEST)
-    PATH = DEST/'2023'/'2023-05'
-    assert (photo.ensure_dir, PATH) in ops
-    FROM = ORIG/'photo1.jpg'
-    TO = PATH/'20230528T115320-photo1.jpg'
-    assert (photo.rename, FROM, TO) in ops
+    paths = [DEST/'2023'/p for p in ['2023-05', '2023-07']]
+    for path in paths:
+        assert (photo.ensure_dir, path) in ops
+    files = [(ORIG/'photo1.jpg',
+              DEST/'2023'/'2023-05'/'20230528T115320-photo1.jpg'),
+             (ORIG/'dir1'/'photo2.jpg',
+              DEST/'2023'/'2023-07'/'20230718T152449-photo2.jpg'),
+             (ORIG/'dir1'/'dir2'/'photo3.jpg',
+              DEST/'2023'/'2023-07'/'20230718T152923-photo3.jpg')]
+    for orig, dest in files:
+        assert (photo.rename, orig, dest) in ops
