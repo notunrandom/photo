@@ -47,7 +47,7 @@ def test_normalise_name_case():
 
 
 def test_datetime_original():
-    result = photo.datetime_original('tests/photo.jpg')
+    result = photo.datetime_original('tests/photos/photo1.jpg')
     assert result == datetime(2023, 5, 28, 11, 53, 20)
 
 
