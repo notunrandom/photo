@@ -83,3 +83,17 @@ def datetime_original(filename):
 
 def ensure_dir(path):
     pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+
+
+def organise_ops(orig, dest):
+    dirs = set()
+    move = set()
+    for f in orig.iterdir():
+        datetime = datetime_original(f)
+        subdir = path_from_datetime(datetime)
+        dirs.add(subdir)
+        name = time_stamp_file_name(f.name, datetime)
+        move.add((f, dest/subdir/name))
+    ops = [(ensure_dir, dest/d) for d in dirs]
+    ops += [(rename, x, y) for x, y in move]
+    return ops

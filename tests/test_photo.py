@@ -96,3 +96,14 @@ def test_apply_ensure_dir_op(tmp_path):
     assert [p.name for p in tmp_path.iterdir()] == [NAME1]
     assert [p.name for p in (tmp_path/NAME1).iterdir()] == [NAME2]
     assert Path(newdir).is_dir() is True
+
+
+def test_organise_ops():
+    DEST = Path('somewhere')
+    ORIG = Path('tests/photos')
+    ops = photo.organise_ops(ORIG, DEST)
+    PATH = DEST/'2023'/'2023-05'
+    assert (photo.ensure_dir, PATH) in ops
+    FROM = ORIG/'photo1.jpg'
+    TO = PATH/'20230528T115320-photo1.jpg'
+    assert (photo.rename, FROM, TO) in ops
