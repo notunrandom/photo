@@ -90,10 +90,14 @@ def organise_ops(orig, dest):
     move = set()
     for f in orig.rglob('*'):
         if f.is_file():
-            datetime = datetime_original(f)
-            subdir = path_from_datetime(datetime)
+            try:
+                datetime = datetime_original(f)
+                subdir = path_from_datetime(datetime)
+                name = time_stamp_file_name(f.name, datetime)
+            except KeyError:
+                subdir = 'sinediem'
+                name = f.name
             dirs.add(subdir)
-            name = time_stamp_file_name(f.name, datetime)
             move.add((f, dest/subdir/name))
     ops = [(ensure_dir, dest/d) for d in dirs]
     ops += [(rename, x, y) for x, y in move]
