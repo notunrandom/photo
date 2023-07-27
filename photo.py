@@ -1,5 +1,6 @@
 import pathlib
 from datetime import datetime
+from collections import Counter
 
 from PIL import Image
 from PIL import ExifTags
@@ -102,3 +103,23 @@ def organise_ops(orig, dest):
     ops = [(ensure_dir, dest/d) for d in dirs]
     ops += [(rename, x, y) for x, y in move]
     return ops
+
+
+def analysis(path):
+    files = Counter()
+    unique = Counter()
+    sinediem = []
+
+    for f in pathlib.Path(path).rglob('*'):
+        if f.is_file():
+            files[f.suffix] += 1
+            try:
+                dt = datetime_original(f.as_posix())
+                unique[(dt, f.name)] += 1
+            except KeyError:
+                sinediem.append((f.name, f.as_posix()))
+
+    names = Counter([x for x, y in sinediem])
+    clashes = len(unique - Counter(list(unique)))
+    clashes += len(names - Counter(list(names)))
+    return files, sinediem, clashes

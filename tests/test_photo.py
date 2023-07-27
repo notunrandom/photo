@@ -98,9 +98,11 @@ def test_apply_ensure_dir_op(tmp_path):
     assert Path(newdir).is_dir() is True
 
 
+ORIG = Path('tests/photos')
+
+
 def test_organise_ops():
     DEST = Path('somewhere')
-    ORIG = Path('tests/photos')
     ops = photo.organise_ops(ORIG, DEST)
 
     # Creation of necessary dated directories
@@ -135,3 +137,11 @@ def test_organise_ops():
               DEST/'sinediem'/'photo4.png')]
     for orig, dest in files:
         assert (photo.rename, orig, dest) in ops
+
+
+def test_analysis():
+    (files, sinediem, clashes) = photo.analysis(ORIG)
+    assert files.total() == 5
+    assert files['.jpg'] == 3
+    assert len(sinediem) == 1
+    assert clashes == 0
