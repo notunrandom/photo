@@ -22,20 +22,6 @@ def iso8601(dt):
     return f'{year:04}{mth:02}{day:02}T{hour:02}{min_:02}{sec:02}'
 
 
-def iso8601_ext(dt, precision='day'):
-    '''Convert a datetime to extended ISO 8601 format, e.g. 1984-03-29.
-
-    At this time datetime.isoformat() does not provide the option of
-    specifying precision.
-    '''
-    result = f'{dt.year:04}'
-    if precision != 'year':
-        result += f'-{dt.month:02}'
-        if precision != 'month':
-            result += f'-{dt.day:02}'
-    return result
-
-
 class IllegalSeparator(Exception):
     pass
 
@@ -47,7 +33,10 @@ def time_stamp_file_name(name, dt, sep='-'):
 
 
 def path_from_datetime(dt):
-    return '/'.join([iso8601_ext(dt, precision=p) for p in ['year', 'month']])
+    iso = iso8601(dt)
+    year = iso[:4]
+    month = iso[:6]
+    return '/'.join([year, month])
 
 
 def normalise_name(name):
