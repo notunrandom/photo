@@ -27,6 +27,13 @@ def test_time_stamp_file_name():
         new_name = photo.time_stamp_file_name(name, dt, sep=':')
 
 
+def test_time_stamp_no_duplication():
+    name = "2010-04-12--12-23_NDX_1234.RAW"
+    dt = datetime(2010, 4, 15, 16, 22, 9)
+    new_name = photo.time_stamp_file_name(name, dt)
+    assert new_name == "20100415T162209-NDX_1234.RAW"
+
+
 def test_path_from_datetime():
     dt = datetime(1995, 3, 17, 9, 5, 59)
     path = photo.path_from_datetime(dt)
@@ -40,6 +47,11 @@ def test_normalise_name_case():
 def test_datetime_original():
     result = photo.datetime_original('tests/photos/photo1.jpg')
     assert result == datetime(2023, 5, 28, 11, 53, 20)
+
+
+def test_datetime_from_name():
+    dt = photo.datetime_from_name('tests/photos/20190728-142356-photo5.jpg')
+    assert dt == datetime(2019, 7, 28, 14, 23, 56)
 
 
 def test_normalise_dir_ops(tmp_path):
@@ -123,16 +135,22 @@ def test_organise_ops():
     for orig, dest in files:
         assert (photo.rename, orig, dest) in ops
 
-    # Files without DateTimeOriginal get put in specific directory
+    # Files without DateTimeOriginal get put in specific directory...
     files = [(ORIG/'photo4.png',
               DEST/'sinediem'/'photo4.png')]
+    for orig, dest in files:
+        assert (photo.rename, orig, dest) in ops
+
+    # ... unless there is date information in their name
+    files = [(ORIG/'20190728-142356-photo5.jpg',
+              DEST/'2019'/'201907'/'20190728T142356-photo5.jpg')]
     for orig, dest in files:
         assert (photo.rename, orig, dest) in ops
 
 
 def test_analysis():
     (files, sinediem, clashes) = photo.analysis(ORIG)
-    assert files.total() == 5
-    assert files['.jpg'] == 3
+    assert files.total() == 6
+    assert files['.jpg'] == 4
     assert len(sinediem) == 1
     assert clashes == 0

@@ -1,4 +1,5 @@
 import pathlib
+import string
 from datetime import datetime
 from collections import Counter
 
@@ -29,7 +30,7 @@ class IllegalSeparator(Exception):
 def time_stamp_file_name(name, dt, sep='-'):
     if not set(sep) <= set('-_.'):
         raise IllegalSeparator
-    return iso8601(dt) + sep + name
+    return iso8601(dt) + sep + name.lstrip(string.digits + string.punctuation)
 
 
 def path_from_datetime(dt):
@@ -71,6 +72,11 @@ def datetime_original(filename):
         return datetime.strptime(dtstring, '%Y:%m:%d %H:%M:%S')
 
 
+def datetime_from_name(filename):
+    dtstring = ''.join(filter(str.isdigit, filename))[:14]
+    return datetime.strptime(dtstring, '%Y%m%d%H%M%S')
+
+
 def ensure_dir(path):
     pathlib.Path(path).mkdir(parents=True, exist_ok=True)
 
@@ -85,8 +91,13 @@ def organise_ops(orig, dest):
                 subdir = path_from_datetime(datetime)
                 name = time_stamp_file_name(f.name, datetime)
             except KeyError:
-                subdir = 'sinediem'
-                name = f.name
+                try:
+                    datetime = datetime_from_name(f.name)
+                    subdir = path_from_datetime(datetime)
+                    name = time_stamp_file_name(f.name, datetime)
+                except Exception:
+                    subdir = 'sinediem'
+                    name = f.name
             dirs.add(subdir)
             move.add((f, dest/subdir/name))
     ops = [(ensure_dir, dest/d) for d in dirs]
@@ -106,7 +117,11 @@ def analysis(path):
                 dt = datetime_original(f.as_posix())
                 unique[(dt, f.name)] += 1
             except KeyError:
-                sinediem.append((f.name, f.as_posix()))
+                try:
+                    dt = datetime_from_name(f.name)
+                    unique[(dt, f.name)] += 1
+                except Exception:
+                    sinediem.append((f.name, f.as_posix()))
 
     names = Counter([x for x, y in sinediem])
     clashes = len(unique - Counter(list(unique)))
