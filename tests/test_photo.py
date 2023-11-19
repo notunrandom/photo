@@ -168,3 +168,25 @@ def test_list_dir():
             ]
     for parts, dt in table:
         assert (orig + parts, dt) in files
+
+
+def test_fill():
+    files = photo.list_dir(ORIG)
+    orig = Path(ORIG).resolve().parts
+    table = [
+            (('dir1', 'photo2.jpg',), datetime(2023, 7, 18, 15, 24, 49)),
+            (('20190728-142356-photo5.jpg',), None),
+            (('photo4.png',), None)
+            ]
+    for parts, dt in table:
+        assert (orig + parts, dt) in files
+
+    files = photo.fill_missing_datetimes(files)
+    added = datetime(2019, 7, 28, 14, 23, 56)
+    table = [
+            (('dir1', 'photo2.jpg',), datetime(2023, 7, 18, 15, 24, 49)),
+            (('20190728-142356-photo5.jpg',), added),
+            (('photo4.png',), None)
+            ]
+    for parts, dt in table:
+        assert (orig + parts, dt) in files

@@ -143,3 +143,17 @@ def list_dir(path):
 
             result.add((f.resolve().parts, datetime))
     return result
+
+
+def fill_missing_datetimes(files):
+    def fill(file):
+        parts, dt = file
+        *dirs, name = parts
+        if dt is None:
+            try:
+                dt = datetime_from_name(name)
+            except Exception:
+                pass
+        return (parts, dt)
+
+    return set(map(fill, files))
