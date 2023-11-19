@@ -117,14 +117,10 @@ def analysis(files):
         *path, name = parts
         suffix = pathlib.PurePath(name).suffix
         suffixes[suffix] += 1
-        if dt is not None:
-            unique[(dt, name)] += 1
+        if dt is None:
+            sinediem.append(parts)
         else:
-            try:
-                dt = datetime_from_name(name)
-                unique[(dt, name)] += 1
-            except Exception:
-                sinediem.append(parts)
+            unique[(dt, name)] += 1
 
     names = Counter([n for *p, n in sinediem])
     clashes = len(unique - Counter(list(unique)))

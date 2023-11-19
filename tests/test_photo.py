@@ -149,7 +149,7 @@ def test_organise_ops():
 
 
 def test_analysis():
-    files = photo.list_dir(ORIG)
+    files = photo.fill_missing_datetimes(photo.list_dir(ORIG))
     (suffixes, sinediem, clashes) = photo.analysis(files)
     assert suffixes.total() == 6
     assert suffixes['.jpg'] == 4
