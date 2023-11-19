@@ -181,12 +181,9 @@ def test_fill():
     for parts, dt in table:
         assert (orig + parts, dt) in files
 
-    files = photo.fill_missing_datetimes(files)
+    filled = photo.fill_missing_datetimes(files)
     added = datetime(2019, 7, 28, 14, 23, 56)
-    table = [
-            (('dir1', 'photo2.jpg',), datetime(2023, 7, 18, 15, 24, 49)),
-            (('20190728-142356-photo5.jpg',), added),
-            (('photo4.png',), None)
-            ]
+    table[1] = (('20190728-142356-photo5.jpg',), added)
+
     for parts, dt in table:
-        assert (orig + parts, dt) in files
+        assert (orig + parts, dt) in filled
