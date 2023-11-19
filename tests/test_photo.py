@@ -149,9 +149,10 @@ def test_organise_ops():
 
 
 def test_analysis():
-    (files, sinediem, clashes) = photo.analysis(ORIG)
-    assert files.total() == 6
-    assert files['.jpg'] == 4
+    files = photo.list_dir(ORIG)
+    (suffixes, sinediem, clashes) = photo.analysis(files)
+    assert suffixes.total() == 6
+    assert suffixes['.jpg'] == 4
     assert len(sinediem) == 1
     assert clashes == 0
 

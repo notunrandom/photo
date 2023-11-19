@@ -108,28 +108,28 @@ def organise_ops(orig, dest):
     return ops
 
 
-def analysis(path):
-    files = Counter()
+def analysis(files):
+    suffixes = Counter()
     unique = Counter()
     sinediem = []
 
-    for f in pathlib.Path(path).rglob('*'):
-        if f.is_file():
-            files[f.suffix] += 1
+    for parts, dt in files:
+        *path, name = parts
+        suffix = pathlib.PurePath(name).suffix
+        suffixes[suffix] += 1
+        if dt is not None:
+            unique[(dt, name)] += 1
+        else:
             try:
-                dt = datetime_original(f.as_posix())
-                unique[(dt, f.name)] += 1
-            except KeyError:
-                try:
-                    dt = datetime_from_name(f.name)
-                    unique[(dt, f.name)] += 1
-                except Exception:
-                    sinediem.append((f.name, f.as_posix()))
+                dt = datetime_from_name(name)
+                unique[(dt, name)] += 1
+            except Exception:
+                sinediem.append(parts)
 
-    names = Counter([x for x, y in sinediem])
+    names = Counter([n for *p, n in sinediem])
     clashes = len(unique - Counter(list(unique)))
     clashes += len(names - Counter(list(names)))
-    return files, sinediem, clashes
+    return suffixes, sinediem, clashes
 
 
 def list_dir(path):
