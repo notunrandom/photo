@@ -87,22 +87,21 @@ def ensure_dir(path):
 def organise_ops(orig, dest):
     dirs = set()
     move = set()
-    for f in orig.rglob('*'):
-        if f.is_file():
-            try:
-                datetime = datetime_original(f)
-                subdir = path_from_datetime(datetime)
-                name = time_stamp_file_name(f.name, datetime)
-            except KeyError:
-                try:
-                    datetime = datetime_from_name(f.name)
-                    subdir = path_from_datetime(datetime)
-                    name = time_stamp_file_name(f.name, datetime)
-                except Exception:
-                    subdir = 'sinediem'
-                    name = f.name
-            dirs.add(subdir)
-            move.add((f, dest/subdir/name))
+    files = fill_missing_datetimes(list_dir(orig))
+
+    for f in files:
+        parts, dt = f
+        *path, name = parts
+        if dt is None:
+            subdir = 'sinediem'
+        else:
+            subdir = path_from_datetime(dt)
+            assert type(name) is str
+            name = time_stamp_file_name(name, dt)
+
+        dirs.add(subdir)
+        move.add((pathlib.PurePath(*parts), dest/subdir/name))
+
     ops = [(ensure_dir, dest/d) for d in dirs]
     ops += [(rename, x, y) for x, y in move]
     return ops

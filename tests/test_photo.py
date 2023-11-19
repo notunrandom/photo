@@ -101,7 +101,7 @@ def test_apply_ensure_dir_op(tmp_path):
     assert Path(newdir).is_dir() is True
 
 
-ORIG = Path('tests/photos')
+ORIG = Path('tests/photos').resolve()
 
 
 def test_organise_ops():
