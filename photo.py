@@ -45,6 +45,8 @@ def normalise_name(name):
 
 
 def normalise_dir_ops(path):
+    # TODO Do I still need this?
+
     names = [p.name for p in path.iterdir() if p.is_file()]
     normal = [normalise_name(name) for name in names]
     changed = [(was, now) for was, now in zip(names, normal) if now != was]
@@ -61,6 +63,7 @@ def rename(old, new):
 
 
 def normalise_dir(pathstring='.'):
+    # TODO Do I still need this?
     path = pathlib.Path(pathstring)
     apply_ops(normalise_dir_ops(path))
 
@@ -127,3 +130,16 @@ def analysis(path):
     clashes = len(unique - Counter(list(unique)))
     clashes += len(names - Counter(list(names)))
     return files, sinediem, clashes
+
+
+def list_dir(path):
+    result = set()
+    for f in pathlib.Path(path).rglob('*'):
+        if f.is_file():
+            try:
+                datetime = datetime_original(f)
+            except KeyError:
+                datetime = None
+
+            result.add((f.resolve().parts, datetime))
+    return result

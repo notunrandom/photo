@@ -154,3 +154,16 @@ def test_analysis():
     assert files['.jpg'] == 4
     assert len(sinediem) == 1
     assert clashes == 0
+
+
+def test_list_dir():
+    files = photo.list_dir(ORIG)
+    orig = Path(ORIG).resolve().parts
+    table = [
+            (('photo1.jpg',), datetime(2023, 5, 28, 11, 53, 20)),
+            (('dir1', 'photo2.jpg',), datetime(2023, 7, 18, 15, 24, 49)),
+            (('20190728-142356-photo5.jpg',), None),
+            (('photo4.png',), None)
+            ]
+    for parts, dt in table:
+        assert (orig + parts, dt) in files
