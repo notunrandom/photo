@@ -159,31 +159,36 @@ def test_analysis():
 
 def test_list_dir():
     files = photo.list_dir(ORIG)
-    orig = Path(ORIG).resolve().parts
+    print(files)
+    orig = ORIG.parts
     table = [
-            (('photo1.jpg',), datetime(2023, 5, 28, 11, 53, 20)),
-            (('dir1', 'photo2.jpg',), datetime(2023, 7, 18, 15, 24, 49)),
-            (('20190728-142356-photo5.jpg',), None),
-            (('photo4.png',), None)
+            ('photo1.jpg', datetime(2023, 5, 28, 11, 53, 20)),
+            ('dir1', 'photo2.jpg', datetime(2023, 7, 18, 15, 24, 49)),
+            ('20190728-142356-photo5.jpg', None),
+            ('photo4.png', None)
             ]
-    for parts, dt in table:
-        assert (orig + parts, dt) in files
+    for *parts, dt in table:
+        full = orig + tuple(parts) + (dt,)
+        print(full)
+        assert full in files
 
 
 def test_fill():
     files = photo.list_dir(ORIG)
     orig = Path(ORIG).resolve().parts
     table = [
-            (('dir1', 'photo2.jpg',), datetime(2023, 7, 18, 15, 24, 49)),
-            (('20190728-142356-photo5.jpg',), None),
-            (('photo4.png',), None)
+            ('dir1', 'photo2.jpg', datetime(2023, 7, 18, 15, 24, 49)),
+            ('20190728-142356-photo5.jpg', None),
+            ('photo4.png', None)
             ]
-    for parts, dt in table:
-        assert (orig + parts, dt) in files
+    for *parts, dt in table:
+        full = orig + tuple(parts) + (dt,)
+        assert full in files
 
     filled = photo.fill_missing_datetimes(files)
     added = datetime(2019, 7, 28, 14, 23, 56)
-    table[1] = (('20190728-142356-photo5.jpg',), added)
+    table[1] = ('20190728-142356-photo5.jpg', added)
 
-    for parts, dt in table:
-        assert (orig + parts, dt) in filled
+    for *parts, dt in table:
+        full = orig + tuple(parts) + (dt,)
+        assert full in filled

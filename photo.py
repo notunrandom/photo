@@ -85,12 +85,13 @@ def ensure_dir(path):
 
 
 def organise_ops(orig, dest):
-    dirs = set()
-    move = set()
+
     files = fill_missing_datetimes(list_dir(orig))
 
-    for f in files:
-        parts, dt = f
+    dirs = set()
+    move = set()
+
+    for *parts, dt in files:
         *path, name = parts
         if dt is None:
             subdir = 'sinediem'
@@ -108,11 +109,12 @@ def organise_ops(orig, dest):
 
 
 def analysis(files):
+
     suffixes = Counter()
     unique = Counter()
     sinediem = []
 
-    for parts, dt in files:
+    for *parts, dt in files:
         *path, name = parts
         suffix = pathlib.PurePath(name).suffix
         suffixes[suffix] += 1
@@ -135,20 +137,18 @@ def list_dir(path):
                 datetime = datetime_original(f)
             except KeyError:
                 datetime = None
-
-            result.add((f.resolve().parts, datetime))
+            result.add(f.resolve().parts + (datetime,))
     return result
 
 
 def fill_missing_datetimes(files):
     def fill(file):
-        parts, dt = file
-        *dirs, name = parts
+        *dirs, name, dt = file
         if dt is None:
             try:
                 dt = datetime_from_name(name)
             except Exception:
                 pass
-        return (parts, dt)
+        return (*dirs, name, dt)
 
     return set(map(fill, files))
