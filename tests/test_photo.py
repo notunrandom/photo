@@ -50,8 +50,10 @@ def test_datetime_original():
 
 
 def test_datetime_from_name():
-    dt = photo.datetime_from_name('tests/photos/20190728-142356-photo5.jpg')
+    dt = photo.datetime_from_name('20190728-142356-photo5.jpg')
     assert dt == datetime(2019, 7, 28, 14, 23, 56)
+    dt = photo.datetime_from_name('1970-08-23--12:23:56_NDX-1234.jpg')
+    assert dt == datetime(1970, 8, 23, 12, 23, 56)
 
 
 def test_normalise_dir_ops(tmp_path):
