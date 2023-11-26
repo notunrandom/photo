@@ -94,10 +94,19 @@ ORIG = Path('tests/photos').resolve()
 
 def test_organise_ops():
     DEST = Path('somewhere')
-    ops = photo.organise_ops(ORIG, DEST)
+    ORIG = Path('/')
+    origin = [
+        ('/', 'photo1.jpg', datetime(2023, 5, 28, 11, 53, 20)),
+        ('/', 'dir1', 'photo2.jpg', datetime(2023, 7, 18, 15, 24, 49)),
+        ('/', 'dir1', 'dir2', 'photo3.jpg', datetime(2023, 7, 18, 15, 29, 23)),
+        ('/', 'photo1.png', datetime(2023, 5, 28, 11, 53, 20)),
+        ('/', 'photo4.png', None),
+        ('/', '20190728-142356-photo5.jpg', datetime(2019, 7, 28, 14, 23, 56)),
+        ]
+    ops = photo.organise_ops(origin, DEST)
 
     # Creation of necessary dated directories
-    paths = [DEST/'2023'/p for p in ['202305', '202307']]
+    paths = [DEST/'sinediem'] + [DEST/'2023'/p for p in ['202305', '202307']]
     for path in paths:
         assert (photo.ensure_dir, path) in ops
 

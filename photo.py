@@ -69,9 +69,7 @@ def ensure_dir(path):
     pathlib.Path(path).mkdir(parents=True, exist_ok=True)
 
 
-def organise_ops(orig, dest):
-
-    files = fill_missing_datetimes(list_dir(orig))
+def organise_ops(files, dest):
 
     dirs = set()
     move = set()
