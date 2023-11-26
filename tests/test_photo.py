@@ -56,20 +56,6 @@ def test_datetime_from_name():
     assert dt == datetime(1970, 8, 23, 12, 23, 56)
 
 
-def test_normalise_dir_ops(tmp_path):
-    assert [p.name for p in tmp_path.iterdir()] == []
-    files = ['2005-lowercase.jpg', '2004-UPPER.jpg', '1999-CamelCase.png']
-    paths = [tmp_path / f for f in files]
-    for p in paths:
-        p.touch()
-    opers = photo.normalise_dir_ops(tmp_path)
-    names = [(op, p.name, q.name) for (op, p, q) in opers]
-    assert names == [
-            (photo.rename, '1999-CamelCase.png', '1999-camelcase.png'),
-            (photo.rename, '2004-UPPER.jpg', '2004-upper.jpg')
-            ]
-
-
 def test_apply_rename_op(tmp_path):
     assert [p for p in tmp_path.iterdir()] == []
     CONTENT = 'Unimportant'
@@ -161,7 +147,6 @@ def test_analysis():
 
 def test_list_dir():
     files = photo.list_dir(ORIG)
-    print(files)
     orig = ORIG.parts
     table = [
             ('photo1.jpg', datetime(2023, 5, 28, 11, 53, 20)),
@@ -171,7 +156,6 @@ def test_list_dir():
             ]
     for *parts, dt in table:
         full = orig + tuple(parts) + (dt,)
-        print(full)
         assert full in files
 
 

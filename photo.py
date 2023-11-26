@@ -44,15 +44,6 @@ def normalise_name(name):
     return name.lower()
 
 
-def normalise_dir_ops(path):
-    # TODO Do I still need this?
-
-    names = [p.name for p in path.iterdir() if p.is_file()]
-    normal = [normalise_name(name) for name in names]
-    changed = [(was, now) for was, now in zip(names, normal) if now != was]
-    return [(rename, path/was, path/now) for was, now in changed]
-
-
 def apply_ops(ops):
     for op, *args in ops:
         op(*args)
@@ -60,12 +51,6 @@ def apply_ops(ops):
 
 def rename(old, new):
     old.rename(new)
-
-
-def normalise_dir(pathstring='.'):
-    # TODO Do I still need this?
-    path = pathlib.Path(pathstring)
-    apply_ops(normalise_dir_ops(path))
 
 
 def datetime_original(filename):
