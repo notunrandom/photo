@@ -89,9 +89,6 @@ def test_apply_ensure_dir_op(tmp_path):
     assert Path(newdir).is_dir() is True
 
 
-ORIG = Path('tests/photos').resolve()
-
-
 def test_organise_ops():
     DEST = Path('somewhere')
     ORIG = Path('/')
@@ -146,7 +143,14 @@ def test_organise_ops():
 
 
 def test_analysis():
-    files = photo.fill_missing_datetimes(photo.list_dir(ORIG))
+    files = [
+        ('/', 'photo1.jpg', datetime(2023, 5, 28, 11, 53, 20)),
+        ('/', 'dir1', 'photo2.jpg', datetime(2023, 7, 18, 15, 24, 49)),
+        ('/', 'dir1', 'dir2', 'photo3.jpg', datetime(2023, 7, 18, 15, 29, 23)),
+        ('/', 'photo1.png', datetime(2023, 5, 28, 11, 53, 20)),
+        ('/', 'photo4.png', None),
+        ('/', '20190728-142356-photo5.jpg', datetime(2019, 7, 28, 14, 23, 56)),
+        ]
     (suffixes, sinediem, clashes) = photo.analysis(files)
     assert suffixes.total() == 6
     assert suffixes['.jpg'] == 4
@@ -155,6 +159,7 @@ def test_analysis():
 
 
 def test_list_dir():
+    ORIG = Path('tests/photos').resolve()
     files = photo.list_dir(ORIG)
     orig = ORIG.parts
     table = [
@@ -169,15 +174,19 @@ def test_list_dir():
 
 
 def test_fill():
-    files = photo.list_dir(ORIG)
-    orig = Path(ORIG).resolve().parts
+    files = [
+        ('/', 'dir1', 'photo2.jpg', datetime(2023, 7, 18, 15, 24, 49)),
+        ('/', 'photo4.png', None),
+        ('/', '20190728-142356-photo5.jpg', None),
+        ]
+    root = Path('/').parts
     table = [
             ('dir1', 'photo2.jpg', datetime(2023, 7, 18, 15, 24, 49)),
             ('20190728-142356-photo5.jpg', None),
             ('photo4.png', None)
             ]
     for *parts, dt in table:
-        full = orig + tuple(parts) + (dt,)
+        full = root + tuple(parts) + (dt,)
         assert full in files
 
     filled = photo.fill_missing_datetimes(files)
@@ -185,5 +194,5 @@ def test_fill():
     table[1] = ('20190728-142356-photo5.jpg', added)
 
     for *parts, dt in table:
-        full = orig + tuple(parts) + (dt,)
+        full = root + tuple(parts) + (dt,)
         assert full in filled
