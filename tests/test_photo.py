@@ -37,7 +37,7 @@ def test_time_stamp_no_duplication():
 def test_path_from_datetime():
     dt = datetime(1995, 3, 17, 9, 5, 59)
     path = photo.path_from_datetime(dt)
-    assert path == "1995/199503"
+    assert path == Path("1995/03")
 
 
 def test_normalise_name_case():
@@ -103,29 +103,29 @@ def test_organise_ops():
     ops = photo.organise_ops(origin, DEST)
 
     # Creation of necessary dated directories
-    paths = [DEST/'sinediem'] + [DEST/'2023'/p for p in ['202305', '202307']]
+    paths = [DEST/'sinediem'] + [DEST/'2023'/p for p in ['05', '07']]
     for path in paths:
         assert (photo.ensure_dir, path) in ops
 
     # Rename photos and move to appropriate directory by date
     files = [(ORIG/'photo1.jpg',
-              DEST/'2023'/'202305'/'20230528T115320-photo1.jpg'),
+              DEST/'2023'/'05'/'20230528T115320-photo1.jpg'),
              (ORIG/'dir1'/'photo2.jpg',
-              DEST/'2023'/'202307'/'20230718T152449-photo2.jpg'),
+              DEST/'2023'/'07'/'20230718T152449-photo2.jpg'),
              (ORIG/'dir1'/'dir2'/'photo3.jpg',
-              DEST/'2023'/'202307'/'20230718T152923-photo3.jpg')]
+              DEST/'2023'/'07'/'20230718T152923-photo3.jpg')]
     for orig, dest in files:
         assert (photo.rename, orig, dest) in ops
 
     # Files with same timestamp but different name/extension are OK
     files = [(ORIG/'photo1.png',
-              DEST/'2023'/'202305'/'20230528T115320-photo1.png')]
+              DEST/'2023'/'05'/'20230528T115320-photo1.png')]
     for orig, dest in files:
         assert (photo.rename, orig, dest) in ops
 
     # Files with same timestamp but different name/extension are OK
     files = [(ORIG/'photo1.png',
-              DEST/'2023'/'202305'/'20230528T115320-photo1.png')]
+              DEST/'2023'/'05'/'20230528T115320-photo1.png')]
     for orig, dest in files:
         assert (photo.rename, orig, dest) in ops
 
@@ -137,7 +137,7 @@ def test_organise_ops():
 
     # ... unless there is date information in their name
     files = [(ORIG/'20190728-142356-photo5.jpg',
-              DEST/'2019'/'201907'/'20190728T142356-photo5.jpg')]
+              DEST/'2019'/'07'/'20190728T142356-photo5.jpg')]
     for orig, dest in files:
         assert (photo.rename, orig, dest) in ops
 

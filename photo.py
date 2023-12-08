@@ -36,8 +36,8 @@ def time_stamp_file_name(name, dt, sep='-'):
 def path_from_datetime(dt):
     iso = iso8601(dt)
     year = iso[:4]
-    month = iso[:6]
-    return '/'.join([year, month])
+    month = iso[4:6]
+    return pathlib.Path(year) / month
 
 
 def normalise_name(name):
@@ -66,7 +66,7 @@ def datetime_from_name(filename):
 
 
 def ensure_dir(path):
-    pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+    path.mkdir(parents=True, exist_ok=True)
 
 
 def organise_ops(files, dest):
